@@ -7,11 +7,15 @@ import asyncio
 import os
 import random
 from typing import List, Dict, Optional
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 from agentscope.agent import ReActAgent
-from agentscope.model import DashScopeChatModel
+from agentscope.model import OpenAIChatModel
 from agentscope.pipeline import MsgHub, sequential_pipeline, fanout_pipeline
-from agentscope.formatter import DashScopeMultiAgentFormatter
+from agentscope.formatter import OpenAIMultiAgentFormatter
 
 from prompt_cn import ChinesePrompts
 from game_roles import GameRoles
@@ -60,12 +64,14 @@ class ThreeKingdomsWerewolfGame:
         agent = ReActAgent(
             name=name,
             sys_prompt=ChinesePrompts.get_role_prompt(role, character),
-            model=DashScopeChatModel(
-                model_name="qwen-max",
-                api_key=os.environ["DASHSCOPE_API_KEY"],
-                enable_thinking=True,
+            model=OpenAIChatModel(
+                model_name=os.environ.get("LLM_MODEL_ID", "gemini-2.5-flash"),
+                api_key=os.environ.get("LLM_API_KEY"),
+                client_args={
+                    "base_url": os.environ.get("LLM_BASE_URL")
+                }
             ),
-            formatter=DashScopeMultiAgentFormatter(),
+            formatter=OpenAIMultiAgentFormatter(),
         )
         
         # 角色身份确认
@@ -368,8 +374,8 @@ class ThreeKingdomsWerewolfGame:
 async def main():
     """主函数"""
     # 检查环境变量
-    if "DASHSCOPE_API_KEY" not in os.environ:
-        print("❌ 请设置环境变量 DASHSCOPE_API_KEY")
+    if "LLM_API_KEY" not in os.environ:
+        print("❌ 请设置环境变量 LLM_API_KEY")
         return
     
     print("🎮 欢迎来到三国狼人杀！")
