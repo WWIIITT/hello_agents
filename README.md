@@ -4,7 +4,7 @@
 
 ### Prerequisites
 
-- Python 3.x
+- Python 3.x(Experimented with 3.13.9)
 
 ### Setup Virtual Environment
 
