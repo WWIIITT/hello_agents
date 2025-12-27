@@ -33,6 +33,23 @@ from hello_agents import (
     ToolChain, ToolChainManager, AsyncToolExecutor
 )
 
+def get_llm():
+    """获取配置了自定义环境变量的LLM实例"""
+    api_key = os.getenv("E_API_KEY")
+    model = os.getenv("E_MODEL_ID")
+    base_url = os.getenv("E_BASE_URL")
+    
+    print(f"DEBUG: Initializing LLM with:")
+    print(f"  API Key: {api_key[:5]}... if exists")
+    print(f"  Model: {model}")
+    print(f"  Base URL: {base_url}")
+
+    return HelloAgentsLLM(
+        apiKey=api_key,
+        model=model,
+        baseUrl=base_url
+    )
+
 def demo_simple_agent():
     """演示SimpleAgent - 基础对话"""
     print("\n" + "="*60)
@@ -40,7 +57,7 @@ def demo_simple_agent():
     print("="*60)
 
     # 创建LLM实例
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     # 创建简单Agent
     agent = SimpleAgent(
@@ -71,7 +88,7 @@ def demo_react_agent():
     print("="*60)
 
     # 创建LLM实例
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     # 创建工具注册表
     tool_registry = ToolRegistry()
@@ -148,7 +165,7 @@ def demo_reflection_agent():
     print("="*60)
 
     # 创建LLM实例
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     # 1. 默认配置演示
     print("\n--- 默认配置 ---")
@@ -218,7 +235,7 @@ def demo_plan_solve_agent():
     print("="*60)
 
     # 创建LLM实例
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     # 1. 默认配置演示
     print("\n--- 默认配置 ---")
@@ -281,7 +298,7 @@ def demo_custom_vs_default():
     print("⚖️ 自定义配置 vs 默认配置对比演示")
     print("="*60)
 
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     task = "设计一个简单的待办事项管理应用"
 
@@ -367,7 +384,7 @@ def interactive_demo():
     print("="*60)
 
     # 创建LLM实例
-    llm = HelloAgentsLLM()
+    llm = get_llm()
 
     # 创建工具注册表（为ReAct Agent准备）
     tool_registry = ToolRegistry()
