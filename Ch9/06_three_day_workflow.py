@@ -159,7 +159,7 @@ def demonstrate_cross_session_continuity():
     maintainer_1 = CodebaseMaintainer(
         project_name="demo_codebase",
         #实际使用的时候替换代码路径
-        codebase_path="/Users/suntao/Documents/GitHub/hello-agents/code/chapter9/codebase",
+        codebase_path="./codebase",
         llm=HelloAgentsLLM()
     )
 
@@ -182,7 +182,7 @@ def demonstrate_cross_session_continuity():
     maintainer_2 = CodebaseMaintainer(
         project_name="demo_codebase",  # 同一个项目
         #实际使用的时候替换代码路径
-        codebase_path="/Users/suntao/Documents/GitHub/hello-agents/code/chapter9/codebase",
+        codebase_path="./codebase",
         llm=HelloAgentsLLM()
     )
 
@@ -264,14 +264,21 @@ def main():
     maintainer = CodebaseMaintainer(
         project_name="demo_codebase",
         #实际使用的时候替换代码路径
-        codebase_path="/Users/suntao/Documents/GitHub/hello-agents/code/chapter9/codebase",
+        codebase_path="./codebase",
         llm=HelloAgentsLLM()
     )
 
     # 执行三天工作流
     day_1_exploration(maintainer)
+    import time
+    print("Waiting for 10 seconds to avoid rate limit...")
+    time.sleep(10)
     day_2_analysis(maintainer)
+    print("Waiting for 10 seconds to avoid rate limit...")
+    time.sleep(10)
     day_3_planning(maintainer)
+    print("Waiting for 10 seconds to avoid rate limit...")
+    time.sleep(10)
     week_later_review(maintainer)
 
     # 额外演示
