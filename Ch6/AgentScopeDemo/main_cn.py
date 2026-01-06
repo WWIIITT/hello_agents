@@ -61,14 +61,18 @@ class ThreeKingdomsWerewolfGame:
         name = get_chinese_name(character)
         self.roles[name] = role
         
+        base_url = os.getenv("E_BASE_URL")
+        if base_url and not base_url.endswith("/v1"):
+            base_url += "/v1"
+
         agent = ReActAgent(
             name=name,
             sys_prompt=ChinesePrompts.get_role_prompt(role, character),
             model=OpenAIChatModel(
-                model_name=os.environ.get("LLM_MODEL_ID", "gemini-2.5-flash"),
-                api_key=os.environ.get("LLM_API_KEY"),
+                model_name="gemini-2.5-flash",  # 强制使用 gemini-2.5-flash，因为它在 AgentScope 中更稳定
+                api_key=os.environ.get("E_API_KEY"),
                 client_args={
-                    "base_url": os.environ.get("LLM_BASE_URL")
+                    "base_url": base_url
                 }
             ),
             formatter=OpenAIMultiAgentFormatter(),

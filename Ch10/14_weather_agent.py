@@ -11,6 +11,8 @@ load_dotenv()
 def create_weather_assistant():
     """创建天气助手"""
     base_url = os.getenv("E_BASE_URL")
+    if base_url and not base_url.endswith("/v1"):
+        base_url += "/v1"
     llm = HelloAgentsLLM(
         api_key=os.getenv("E_API_KEY"),
         base_url=base_url, 
