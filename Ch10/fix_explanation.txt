@@ -1,0 +1,67 @@
+# Problem Fix Explanation
+
+## The Issue
+The error `User location is not supported` occurred because the agent was accidentally connecting to the Google Gemini official API (which has regional restrictions) instead of your custom proxy (`newapi.pockgo.com`).
+
+## Why it happened
+1. In `14_weather_agent.py`, we tried to pass the custom configuration using:
+   ```python
+   llm = HelloAgentsLLM(
+       apiKey=os.getenv("E_API_KEY"),   # <--- Incorrect parameter name
+       baseUrl=base_url,                # <--- Incorrect parameter name
+       ...
+   )
+   ```
+2. The Python class `HelloAgentsLLM` expects arguments in **snake_case** (`api_key`, `base_url`), not camelCase.
+3. Because the names didn't match, the parameters were ignored. The class fell back to the default values found in your `.env` file (`LLM_API_KEY` and `LLM_BASE_URL`), which pointed to the restricted Google API.
+
+## The Fix
+We corrected the parameter names in `14_weather_agent.py`:
+```python
+llm = HelloAgentsLLM(
+    api_key=os.getenv("E_API_KEY"),  # corrected
+    base_url=base_url,               # corrected
+    model=os.getenv("E_MODEL_ID")
+)
+```
+This forces the agent to use the `E_API_KEY` and `E_BASE_URL` (Pockgo), which bypasses the location restriction.
+
+---
+
+# How to use an OpenAI Key
+
+If you want to switch this agent to use an official OpenAI key (`sk-...`), you have two options:
+
+### Option 1: The "Auto-Detect" Method (Recommended)
+`HelloAgentsLLM` is smart enough to find your key if you set it in the environment.
+
+1. **Update .env**: Add your OpenAI key.
+   ```ini
+   OPENAI_API_KEY=sk-proj-...
+   ```
+2. **Modify `14_weather_agent.py`**:
+   Remove the explicit parameters so the class can find the defaults itself.
+   ```python
+   def create_weather_assistant():
+       # Initialize without arguments - it will automatically look for OPENAI_API_KEY
+       llm = HelloAgentsLLM() 
+       
+       assistant = SimpleAgent(
+           name="WeatherBot",
+           llm=llm,
+           # ... rest of code
+       )
+   ```
+
+### Option 2: The Explicit Method
+If you want to pass the key directly in the code:
+
+```python
+def create_weather_assistant():
+    llm = HelloAgentsLLM(
+        api_key="sk-proj-...",         # Your OpenAI Key
+        model="gpt-4",                 # Or gpt-3.5-turbo
+        provider="openai"              # Explicitly state provider (optional but good)
+    )
+    # ...
+```

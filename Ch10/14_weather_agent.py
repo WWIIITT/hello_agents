@@ -10,7 +10,12 @@ load_dotenv()
 
 def create_weather_assistant():
     """创建天气助手"""
-    llm = HelloAgentsLLM()
+    base_url = os.getenv("E_BASE_URL")
+    llm = HelloAgentsLLM(
+        api_key=os.getenv("E_API_KEY"),
+        base_url=base_url, 
+        model=os.getenv("E_MODEL_ID")
+    )
 
     assistant = SimpleAgent(
         name="天气助手",
